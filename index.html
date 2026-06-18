@@ -207,6 +207,29 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .profile-stat-key{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
 .profile-edit-btn{display:block;width:100%;background:transparent;border:1.5px solid var(--bor);border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);cursor:pointer;text-align:center}
 .profile-edit-btn:active{background:var(--sur2)}
+
+.meas-section{background:var(--sur);border:1.5px solid var(--bor);border-radius:var(--r);padding:14px;margin-bottom:16px}
+.meas-toggle{display:flex;align-items:center;gap:8px;cursor:pointer}
+.meas-toggle-label{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--acc);flex:1}
+.meas-toggle-hint{font-size:11px;color:var(--mut)}
+.meas-toggle-chev{font-size:12px;color:var(--mut);transition:transform .2s}
+.meas-toggle.open .meas-toggle-chev{transform:rotate(180deg)}
+.meas-body{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--bor)}
+.meas-body.open{display:block;animation:fu .2s ease}
+.meas-hint{font-size:12px;color:var(--mut);line-height:1.6;margin-bottom:12px;background:var(--sur2);border-radius:6px;padding:8px 10px}
+.meas-hint b{color:var(--txt)}
+.sex-toggle{display:flex;border:1.5px solid var(--bor);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.sex-btn{flex:1;padding:9px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);background:var(--sur);cursor:pointer;border:none}
+.sex-btn.on{background:var(--acc);color:#000}
+.bf-result{background:var(--sur2);border-radius:8px;padding:12px 14px;margin-top:10px;display:none}
+.bf-result.on{display:block;animation:fu .3s ease}
+.bf-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px}
+.bf-num{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:900;line-height:1}
+.bf-cat{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.bf-insight{font-size:12px;color:var(--mut);line-height:1.5;margin-bottom:8px}
+.bf-gauge-track{height:8px;border-radius:8px;background:var(--bor);margin-bottom:4px}
+.bf-gauge-fill{height:100%;border-radius:8px;transition:width .5s ease}
+.bf-gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
 </style>
 </head>
 <body>
@@ -298,6 +321,44 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
     <div class="glabs"><span>Underweight</span><span>Healthy</span><span>Overweight</span><span>Obese</span></div>
     <div class="bins" id="bi"></div>
   </div>
+  <div class="meas-section">
+    <div class="meas-toggle" id="measToggle" onclick="togMeas()">
+      <span class="meas-toggle-label">&#128207; Body Measurements</span>
+      <span class="meas-toggle-hint">More accurate than BMI</span>
+      <span class="meas-toggle-chev">&#8964;</span>
+    </div>
+    <div class="meas-body" id="measBody">
+      <div class="meas-hint">Uses the <b>U.S. Navy formula</b> - much more accurate than BMI. Measure with a flexible tape measure at the widest point, first thing in the morning. <b>Optional but recommended.</b></div>
+      <div class="lbl">Biological sex</div>
+      <div class="sex-toggle">
+        <button class="sex-btn on" id="sexM" onclick="setSex('m')">Male</button>
+        <button class="sex-btn" id="sexF" onclick="setSex('f')">Female</button>
+      </div>
+      <div class="fg">
+        <label class="lbl" for="iWaist">Waist <span id="waistUnit" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(cm - at navel)</span></label>
+        <input class="inp" id="iWaist" type="number" placeholder="e.g. 90" min="40" max="200" inputmode="decimal" oninput="calcBF()">
+      </div>
+      <div class="fg">
+        <label class="lbl" for="iNeck">Neck <span id="neckUnit" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(cm - below larynx)</span></label>
+        <input class="inp" id="iNeck" type="number" placeholder="e.g. 38" min="20" max="80" inputmode="decimal" oninput="calcBF()">
+      </div>
+      <div class="fg" id="hipRow" style="display:none">
+        <label class="lbl" for="iHip">Hip <span id="hipUnit" style="font-weight:400;text-transform:none;letter-spacing:0;font-size:11px">(cm - widest point)</span></label>
+        <input class="inp" id="iHip" type="number" placeholder="e.g. 100" min="40" max="200" inputmode="decimal" oninput="calcBF()">
+      </div>
+      <div class="bf-result" id="bfResult">
+        <div class="bf-row">
+          <div class="bf-num" id="bfNum">-</div>
+          <div style="font-size:16px;color:var(--mut)">% body fat</div>
+        </div>
+        <div class="bf-cat" id="bfCat">-</div>
+        <div class="bf-insight" id="bfInsight"></div>
+        <div class="bf-gauge-track"><div class="bf-gauge-fill" id="bfFill" style="width:0%"></div></div>
+        <div class="bf-gauge-labels"><span>Essential</span><span>Athlete</span><span>Fitness</span><span>Average</span><span>Obese</span></div>
+      </div>
+    </div>
+  </div>
+
   </div><!-- end p1form -->
 </div>
 
@@ -398,7 +459,7 @@ var S={pg:0,name:'',age:0,wKg:0,hCm:0,bmi:0,bmiC:'',unit:'m',goal:'',exp:'',days
 var savedPicks = LS.get('vidpicks') || {};
 
 function saveProfile(){
-  LS.set('profile',{name:S.name,age:S.age,wKg:S.wKg,hCm:S.hCm,bmi:S.bmi,bmiC:S.bmiC,unit:S.unit,goal:S.goal,exp:S.exp,days:S.days,eq:S.eq,foc:S.foc});
+  LS.set('profile',{name:S.name,age:S.age,wKg:S.wKg,hCm:S.hCm,bmi:S.bmi,bmiC:S.bmiC,unit:S.unit,goal:S.goal,exp:S.exp,days:S.days,eq:S.eq,foc:S.foc,sex:S.sex,waistCm:S.waistCm,neckCm:S.neckCm,hipCm:S.hipCm,bf:S.bf,bfCat:S.bfCat});
 }
 function savePick(name,vid){
   savedPicks[name]=vid;
@@ -643,6 +704,69 @@ function weeklyCalories(){
 // ── PROFILE CARD (summary mode on page 1) ───────────────────────────────────
 var rebuildMode = false;
 
+
+S.sex='m'; S.waistCm=0; S.neckCm=0; S.hipCm=0; S.bf=null; S.bfCat='';
+
+function togMeas(){
+  var tog=gid('measToggle'),body=gid('measBody');
+  if(!tog)return;
+  tog.classList.toggle('open');body.classList.toggle('open');
+}
+function setSex(sex){
+  S.sex=sex;
+  var sm=gid('sexM'),sf=gid('sexF');
+  if(sm)sm.classList.toggle('on',sex==='m');
+  if(sf)sf.classList.toggle('on',sex==='f');
+  var hr=gid('hipRow');
+  if(hr)hr.style.display=sex==='f'?'block':'none';
+  calcBF();
+}
+function calcBF(){
+  var we=gid('iWaist'),ne=gid('iNeck'),he=gid('iHip');
+  if(!we||!ne)return;
+  var waist=parseFloat(we.value)||0;
+  var neck=parseFloat(ne.value)||0;
+  var hip=he?parseFloat(he.value)||0:0;
+  if(S.unit==='i'){waist*=2.54;neck*=2.54;hip*=2.54;}
+  S.waistCm=waist;S.neckCm=neck;S.hipCm=hip;
+  var h=S.hCm||0;
+  var res=gid('bfResult');
+  if(!res)return;
+  if(!h||!waist||!neck||(S.sex==='f'&&!hip)){res.classList.remove('on');return;}
+  var bf;
+  if(S.sex==='m'){
+    if(waist<=neck){res.classList.remove('on');return;}
+    bf=495/(1.0324-0.19077*Math.log10(waist-neck)+0.15456*Math.log10(h))-450;
+  }else{
+    if(waist+hip<=neck){res.classList.remove('on');return;}
+    bf=495/(1.29579-0.35004*Math.log10(waist+hip-neck)+0.22100*Math.log10(h))-450;
+  }
+  bf=Math.round(bf*10)/10;
+  if(isNaN(bf)||bf<2||bf>65){res.classList.remove('on');return;}
+  S.bf=bf;
+  var cat,col,ins,pct;
+  if(S.sex==='m'){
+    if(bf<6){cat='Essential Fat';col='#3b82f6';pct=5;ins='Below the healthy minimum. Increase calorie intake and reduce cardio.';}
+    else if(bf<14){cat='Athlete';col='#22c55e';pct=22;ins='Elite body composition. Maintain with balanced nutrition and consistent training.';}
+    else if(bf<18){cat='Fitness';col='#4ade80';pct=38;ins='Very lean and healthy. Ideal for both performance and aesthetics.';}
+    else if(bf<25){cat='Average';col='#f59e0b';pct=58;ins='Healthy range. Training and a moderate calorie deficit will improve this.';}
+    else{cat='Obese';col='#ef4444';pct=82;ins='Above healthy range. Prioritise fat loss through training and a calorie deficit.';}
+  }else{
+    if(bf<14){cat='Essential Fat';col='#3b82f6';pct=5;ins='Below the healthy minimum for females. Increase calorie intake.';}
+    else if(bf<21){cat='Athlete';col='#22c55e';pct=22;ins='Elite body composition for females.';}
+    else if(bf<25){cat='Fitness';col='#4ade80';pct=38;ins='Very lean and healthy range for females.';}
+    else if(bf<32){cat='Average';col='#f59e0b';pct=58;ins='Healthy range for females. Training and nutrition will improve this.';}
+    else{cat='Obese';col='#ef4444';pct=82;ins='Above healthy range. Prioritise fat loss through training and nutrition.';}
+  }
+  S.bfCat=cat;
+  var nb=gid('bfNum'),cb=gid('bfCat'),ib=gid('bfInsight'),fb=gid('bfFill');
+  if(nb){nb.textContent=bf;nb.style.color=col;}
+  if(cb){cb.textContent=cat;cb.style.color=col;}
+  if(ib)ib.textContent=ins;
+  if(fb){fb.style.width=pct+'%';fb.style.background=col;}
+  res.classList.add('on');
+}
+
 function bmiColor(cat){
   return {'Underweight':'#3b82f6','Healthy Weight':'#22c55e','Overweight':'#f59e0b','Obese':'#ef4444'}[cat]||'var(--acc)';
 }
@@ -652,25 +776,32 @@ function renderProfileCard(){
   var wD=S.unit==='m'?Math.round(S.wKg)+'kg':Math.round(S.wKg*2.20462)+'lb';
   var hD=S.unit==='m'?Math.round(S.hCm)+'cm':Math.floor(S.hCm/30.48)+'ft '+Math.round(S.hCm%30.48/2.54)+'in';
   var bmiIns={'Underweight':'Focus on calorie surplus and compound lifts to build healthy weight.','Healthy Weight':'Ideal zone - your program is optimised purely for your goal.','Overweight':'Combine training with a moderate calorie deficit for best fat loss results.','Obese':'Joint-friendly exercises prioritised. Start conservative and build load weekly.'}[S.bmiC]||'';
+  var bfColors={'Essential Fat':'#3b82f6','Athlete':'#22c55e','Fitness':'#4ade80','Average':'#f59e0b','Obese':'#ef4444'};
+  var bfCol=S.bfCat?(bfColors[S.bfCat]||'var(--acc)'):'var(--acc)';
+  var bfHTML=S.bf
+    ? '<div class="profile-bf-row"><div class="profile-bf-num" style="color:'+bfCol+'">'+S.bf+'<span style="font-size:14px;color:var(--mut)">%</span></div><div class="profile-bf-info"><div class="profile-bf-cat" style="color:'+bfCol+'">'+S.bfCat+'</div><div class="profile-bf-detail">Body fat (Navy formula) - more accurate than BMI alone</div></div></div>'
+    : '<div style="font-size:12px;color:var(--mut);background:var(--sur2);border-radius:7px;padding:9px 11px;margin-bottom:10px;line-height:1.5">&#128207; <b style="color:var(--txt)">No body fat reading yet.</b> Tap Edit Stats, expand Body Measurements and enter your waist and neck circumference.</div>';
+  var whr=S.waistCm&&S.hCm?Math.round(S.waistCm/S.hCm*100)/100:null;
+  var whrCol=!whr?'var(--mut)':whr<0.4?'#3b82f6':whr<0.5?'#22c55e':whr<0.6?'#f59e0b':'#ef4444';
+  var whrCat=!whr?'':whr<0.4?'Very Lean':whr<0.5?'Healthy':whr<0.6?'Overweight':'High Risk';
   return '<div class="profile-card">'
     +'<div class="profile-card-name">'+H(S.name)+'</div>'
     +'<div class="profile-card-sub">Age '+S.age+' &bull; '+wD+' &bull; '+hD+'</div>'
-    +'<div class="profile-bmi-row">'
-    +'<div class="profile-bmi-num" style="color:'+col+'">'+S.bmi+'</div>'
-    +'<div class="profile-bmi-info">'
-    +'<div class="profile-bmi-cat" style="color:'+col+'">'+S.bmiC+'</div>'
-    +'<div class="profile-bmi-detail">'+bmiIns+'</div>'
-    +'</div></div>'
+    +'<div class="profile-bmi-row"><div class="profile-bmi-num" style="color:'+col+'">'+S.bmi+'</div>'
+    +'<div class="profile-bmi-info"><div class="profile-bmi-cat" style="color:'+col+'">BMI: '+S.bmiC+'</div>'
+    +'<div class="profile-bmi-detail">'+bmiIns+'</div></div></div>'
+    +bfHTML
     +'<div class="profile-stats-grid">'
     +'<div class="profile-stat-box"><div class="profile-stat-val">'+S.age+'</div><div class="profile-stat-key">Age</div></div>'
     +'<div class="profile-stat-box"><div class="profile-stat-val">'+S.bmi+'</div><div class="profile-stat-key">BMI</div></div>'
     +'<div class="profile-stat-box"><div class="profile-stat-val">'+wD+'</div><div class="profile-stat-key">Weight</div></div>'
     +'<div class="profile-stat-box"><div class="profile-stat-val">'+hD+'</div><div class="profile-stat-key">Height</div></div>'
+    +(S.waistCm?'<div class="profile-stat-box"><div class="profile-stat-val">'+Math.round(S.waistCm)+'cm</div><div class="profile-stat-key">Waist</div></div>':'')
+    +(whr?'<div class="profile-stat-box"><div class="profile-stat-val" style="color:'+whrCol+'">'+whr+'</div><div class="profile-stat-key">Waist/Ht ('+whrCat+')</div></div>':'')
     +'</div>'
-    +'<button class="profile-edit-btn" onclick="showP1Form()">&#9998; Edit Stats</button>'
+    +'<button class="profile-edit-btn" onclick="showP1Form()">&#9998; Edit Stats and Measurements</button>'
     +'</div>';
 }
-
 function showP1Summary(){
   gid('p1summary').style.display='block';
   gid('p1form').style.display='none';
@@ -692,6 +823,11 @@ function showP1Form(){
     gid('iHi').value=S.hCm?Math.round(S.hCm%30.48/2.54):'';
   }
   setU(S.unit);
+  if(gid('sexM'))setSex(S.sex||'m');
+  if(S.waistCm&&gid('iWaist'))gid('iWaist').value=S.unit==='i'?Math.round(S.waistCm/2.54*10)/10:Math.round(S.waistCm*10)/10;
+  if(S.neckCm&&gid('iNeck'))gid('iNeck').value=S.unit==='i'?Math.round(S.neckCm/2.54*10)/10:Math.round(S.neckCm*10)/10;
+  if(S.hipCm&&gid('iHip'))gid('iHip').value=S.unit==='i'?Math.round(S.hipCm/2.54*10)/10:Math.round(S.hipCm*10)/10;
+  calcBF();
   pc();
 }
 
@@ -774,6 +910,11 @@ function setU(u){
   gid('uI').classList.toggle('on',u==='i');
   gid('mIn').style.display=u==='m'?'':'none';
   gid('iIn').style.display=u==='i'?'':'none';
+  var wu=gid('waistUnit'),nu=gid('neckUnit'),hu=gid('hipUnit');
+  if(wu)wu.textContent=u==='m'?'(cm - at navel)':'(inches - at navel)';
+  if(nu)nu.textContent=u==='m'?'(cm - below larynx)':'(inches - below larynx)';
+  if(hu)hu.textContent=u==='m'?'(cm - widest point)':'(inches - widest point)';
+  calcBF();
   pc();
 }
 
