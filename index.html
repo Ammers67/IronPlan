@@ -191,6 +191,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .log-hist-set{color:var(--mut);line-height:1.7}
 .log-hist-set b{color:var(--acc)}
 .log-no-hist{font-size:12px;color:#444;font-style:italic}
+
+/* PROFILE SUMMARY CARD (rebuild mode) */
+.profile-card{background:var(--sur);border:1.5px solid var(--bor);border-radius:var(--r);padding:18px;margin-bottom:20px}
+.profile-card-name{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;color:var(--acc);margin-bottom:4px}
+.profile-card-sub{font-size:13px;color:var(--mut);margin-bottom:16px}
+.profile-bmi-row{display:flex;align-items:center;gap:14px;background:var(--sur2);border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.profile-bmi-num{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;line-height:1}
+.profile-bmi-info{flex:1}
+.profile-bmi-cat{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.profile-bmi-detail{font-size:12px;color:var(--mut);margin-top:2px;line-height:1.6}
+.profile-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.profile-stat-box{background:var(--sur2);border-radius:8px;padding:10px 12px}
+.profile-stat-val{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;color:var(--txt)}
+.profile-stat-key{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
+.profile-edit-btn{display:block;width:100%;background:transparent;border:1.5px solid var(--bor);border-radius:8px;padding:11px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);cursor:pointer;text-align:center}
+.profile-edit-btn:active{background:var(--sur2)}
 </style>
 </head>
 <body>
@@ -217,6 +233,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 
 <!-- PAGE 1: ABOUT YOU -->
 <div class="pg" id="p1">
+  <div id="p1summary" style="display:none">
+    <div class="eye">Your Profile</div>
+    <div id="profileCard"></div>
+    <div style="font-size:13px;color:var(--mut);margin-bottom:20px;line-height:1.5">Your name and profile are locked. Tap <b style="color:var(--txt)">Edit Stats</b> above to update weight, height or age, then continue to choose new program settings.</div>
+  </div>
+  <div id="p1form">
   <div class="eye">Step 1 of 6</div>
   <div class="h2">About You</div>
   <div class="sub">Your stats shape every aspect of your program.</div>
@@ -276,6 +298,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
     <div class="glabs"><span>Underweight</span><span>Healthy</span><span>Overweight</span><span>Obese</span></div>
     <div class="bins" id="bi"></div>
   </div>
+  </div><!-- end p1form -->
 </div>
 
 <!-- PAGE 2: GOAL -->
@@ -616,6 +639,62 @@ function weeklyCalories(){
   return Math.round(totalKcal);
 }
 
+
+// ── PROFILE CARD (summary mode on page 1) ───────────────────────────────────
+var rebuildMode = false;
+
+function bmiColor(cat){
+  return {'Underweight':'#3b82f6','Healthy Weight':'#22c55e','Overweight':'#f59e0b','Obese':'#ef4444'}[cat]||'var(--acc)';
+}
+
+function renderProfileCard(){
+  var col=bmiColor(S.bmiC);
+  var wD=S.unit==='m'?Math.round(S.wKg)+'kg':Math.round(S.wKg*2.20462)+'lb';
+  var hD=S.unit==='m'?Math.round(S.hCm)+'cm':Math.floor(S.hCm/30.48)+'ft '+Math.round(S.hCm%30.48/2.54)+'in';
+  var bmiIns={'Underweight':'Focus on calorie surplus and compound lifts to build healthy weight.','Healthy Weight':'Ideal zone - your program is optimised purely for your goal.','Overweight':'Combine training with a moderate calorie deficit for best fat loss results.','Obese':'Joint-friendly exercises prioritised. Start conservative and build load weekly.'}[S.bmiC]||'';
+  return '<div class="profile-card">'
+    +'<div class="profile-card-name">'+H(S.name)+'</div>'
+    +'<div class="profile-card-sub">Age '+S.age+' &bull; '+wD+' &bull; '+hD+'</div>'
+    +'<div class="profile-bmi-row">'
+    +'<div class="profile-bmi-num" style="color:'+col+'">'+S.bmi+'</div>'
+    +'<div class="profile-bmi-info">'
+    +'<div class="profile-bmi-cat" style="color:'+col+'">'+S.bmiC+'</div>'
+    +'<div class="profile-bmi-detail">'+bmiIns+'</div>'
+    +'</div></div>'
+    +'<div class="profile-stats-grid">'
+    +'<div class="profile-stat-box"><div class="profile-stat-val">'+S.age+'</div><div class="profile-stat-key">Age</div></div>'
+    +'<div class="profile-stat-box"><div class="profile-stat-val">'+S.bmi+'</div><div class="profile-stat-key">BMI</div></div>'
+    +'<div class="profile-stat-box"><div class="profile-stat-val">'+wD+'</div><div class="profile-stat-key">Weight</div></div>'
+    +'<div class="profile-stat-box"><div class="profile-stat-val">'+hD+'</div><div class="profile-stat-key">Height</div></div>'
+    +'</div>'
+    +'<button class="profile-edit-btn" onclick="showP1Form()">&#9998; Edit Stats</button>'
+    +'</div>';
+}
+
+function showP1Summary(){
+  gid('p1summary').style.display='block';
+  gid('p1form').style.display='none';
+  gid('profileCard').innerHTML=renderProfileCard();
+}
+
+function showP1Form(){
+  gid('p1summary').style.display='none';
+  gid('p1form').style.display='block';
+  // Pre-fill form fields with saved values
+  gid('iN').value=S.name;
+  gid('iA').value=S.age||'';
+  if(S.unit==='m'){
+    gid('iWk').value=S.wKg?Math.round(S.wKg*10)/10:'';
+    gid('iHc').value=S.hCm?Math.round(S.hCm):'';
+  } else {
+    gid('iWl').value=S.wKg?Math.round(S.wKg*2.20462):'';
+    gid('iHf').value=S.hCm?Math.floor(S.hCm/30.48):'';
+    gid('iHi').value=S.hCm?Math.round(S.hCm%30.48/2.54):'';
+  }
+  setU(S.unit);
+  pc();
+}
+
 function updateBar(){
   var n=S.pg;
   var steps=['','About You','About You','Goal','Experience','Schedule','Equipment','Focus','','Your Program'];
@@ -647,6 +726,10 @@ function handleBtn(){
     return;
   }
   if(p===1){
+    // If in summary mode, profile is already valid - go straight to next step
+    if(rebuildMode&&gid('p1summary').style.display!=='none'){
+      showPg(2);return;
+    }
     var name=(gid('iN').value||'').trim();
     var age=parseInt(gid('iA').value)||0;
     var ok=true;
@@ -847,10 +930,11 @@ function genProg(){
   var splits={2:'2-Day Full Body',3:'3-Day Full Body',4:'4-Day Upper Lower',5:'5-Day PPL Split',6:'6-Day PPL Program'};
   var gpfx={strength:'Strength',muscle:'Hypertrophy',fat_loss:'Fat Loss',fitness:'Fitness'};
   var bNote='';
-  if(S.bmiC==='Underweight')bNote=S.name+', at BMI '+S.bmi+' eating enough calories is as important as training. Aim for a calorie surplus with high protein to build healthy weight alongside muscle.';
-  else if(S.bmiC==='Healthy Weight')bNote=S.name+', at BMI '+S.bmi+' you are in the ideal zone. Your program is optimised purely for your goal with no metabolic constraints.';
-  else if(S.bmiC==='Overweight')bNote=S.name+', at BMI '+S.bmi+' combining this program with a 300-500 calorie daily deficit will accelerate fat loss while preserving muscle.';
-  else bNote=S.name+', at BMI '+S.bmi+' every session counts. Joint-friendly exercises are prioritised. Start conservative, nail technique, and add load weekly.';
+  var bfStr=S.bf?' ('+S.bf+'% body fat - '+S.bfCat+')':'';
+  if(S.bmiC==='Underweight')bNote=S.name+', at BMI '+S.bmi+bfStr+' eating enough calories is as important as training. Aim for a calorie surplus with high protein to build healthy weight alongside muscle.';
+  else if(S.bmiC==='Healthy Weight')bNote=S.name+', at BMI '+S.bmi+bfStr+' you are in the ideal zone. Your program is optimised purely for your goal with no metabolic constraints.';
+  else if(S.bmiC==='Overweight')bNote=S.name+', at BMI '+S.bmi+bfStr+' combining this program with a 300-500 calorie daily deficit will accelerate fat loss while preserving muscle.';
+  else bNote=S.name+', at BMI '+S.bmi+bfStr+' every session counts. Joint-friendly exercises are prioritised. Start conservative and build load weekly.';
   var ptip='';
   if(S.exp==='beginner')ptip='Add weight every session (5 lb upper body, 10 lb lower body). Linear progression works incredibly fast for beginners.';
   else if(S.exp==='intermediate')ptip='When you hit the top of your rep range on all sets, add weight next session. Stalled two weeks? Deload at 60% then push again.';
@@ -955,10 +1039,12 @@ function clearVidByInpId(btnId){
 }
 
 function rebuildProgram(){
-  // Clear saved program and go back to step 1, keeping profile data
   LS.del('program');
   vidInputMap={};logMap={};logSetCounts={};
+  rebuildMode=true;
   showPg(1);
+  // Show summary card since we have a saved profile
+  if(S.name)showP1Summary();
 }
 
 function reRenderProg(){
@@ -1013,6 +1099,15 @@ function renderProg(p){
   var saved=LS.get('profile');
   if(saved&&saved.name){
     Object.assign(S,saved);
+    var prog=LS.get('program');
+    if(prog){
+      // Has saved program - load it directly
+      vidInputMap={};logMap={};logSetCounts={};
+      gid('out').innerHTML=renderProg(prog);
+      showPg(8);
+      return;
+    }
+    // Has profile but no program - show hero with Continue button
     gid('savedNotice').style.display='block';
     gid('nb').textContent='Continue';
   }
