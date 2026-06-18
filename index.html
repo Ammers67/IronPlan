@@ -624,6 +624,7 @@ function updateBar(){
   gid('pfill').style.width=(n===0?0:Math.round(n/9*100))+'%';
   var nb=gid('nb'),bb=gid('bb');
   if(n===7){nb.style.display='none';bb.style.display='block';return;}
+  if(n===8){nb.style.display='none';bb.style.display='none';return;}
   nb.style.display='block';
   nb.textContent=n===0?'Get Started':n===6?'Build My Program':'Continue';
   bb.style.display=n>1?'block':'none';
@@ -632,12 +633,7 @@ function updateBar(){
 // ---- MAIN BUTTON ----
 function handleBtn(){
   var p=S.pg;
-  if(p===8){
-    // Ask if they want to rebuild or just show saved program again
-    if(confirm('Rebuild your program with new settings?')){LS.del('program');showPg(1);}
-    else{loadSavedProgram();}
-    return;
-  }
+  if(p===8){return;}  // Program page - no button action, rebuild via in-page button
   if(p===0){
     // Check for saved profile
     var saved=LS.get('profile');
@@ -958,6 +954,13 @@ function clearVidByInpId(btnId){
   reRenderProg();
 }
 
+function rebuildProgram(){
+  // Clear saved program and go back to step 1, keeping profile data
+  LS.del('program');
+  vidInputMap={};logMap={};logSetCounts={};
+  showPg(1);
+}
+
 function reRenderProg(){
   vidInputMap={};   // reset - rebuilt by makeVideoHTML during render
   logMap={};        // reset - rebuilt by makeLogHTML during render
@@ -1000,7 +1003,9 @@ function renderProg(p){
     +'<div class="wkg">'+wk+'</div><div class="shead">Weekly Schedule</div>'+dcards
     +'<div class="divd"></div><div class="shead">Training Principles</div>'+prs
     +'<div class="pb" style="border-left-color:#fff"><h4 style="color:var(--txt)">&#128200; Progression Plan</h4><p>'+H(p.progressionTip)+'</p></div>'
-    +'<div class="divd"></div><div style="font-size:12px;color:var(--mut);line-height:1.8;text-align:center;padding-bottom:8px">Always warm up 5-10 min before lifting.<br>Consult a doctor before starting a new fitness routine.</div>';
+    +'<div class="divd"></div>'
+    +'<div style="font-size:12px;color:var(--mut);line-height:1.8;text-align:center;padding-bottom:6px">Always warm up 5-10 min before lifting.<br>Consult a doctor before starting a new fitness routine.</div>'
+    +'<button onclick="rebuildProgram()" class="btns" style="margin-top:12px;margin-bottom:20px">&#9998; Change Settings and Rebuild</button>';
 }
 
 // ---- INIT: check for saved data ----
