@@ -843,6 +843,20 @@ function showP1Form(){
   pc();
 }
 
+
+function resetApp(){
+  if(!confirm('This will permanently delete your profile, program, workout logs, and saved videos from this device.\n\nThis cannot be undone. Continue?'))return;
+  try{
+    var keys=[];
+    for(var i=0;i<localStorage.length;i++){
+      var k=localStorage.key(i);
+      if(k&&k.indexOf('ironplan_')===0)keys.push(k);
+    }
+    keys.forEach(function(k){localStorage.removeItem(k);});
+  }catch(e){}
+  location.reload();
+}
+
 function updateBar(){
   var n=S.pg;
   var steps=['','About You','About You','Goal','Experience','Schedule','Equipment','Focus','','Your Program'];
@@ -1314,7 +1328,8 @@ function renderProg(p){
     +'<div class="pb" style="border-left-color:#fff"><h4 style="color:var(--txt)">&#128200; Progression Plan</h4><p>'+H(p.progressionTip)+'</p></div>'
     +'<div class="divd"></div>'
     +'<div style="font-size:12px;color:var(--mut);line-height:1.8;text-align:center;padding-bottom:6px">Always warm up 5-10 min before lifting.<br>Consult a doctor before starting a new fitness routine.</div>'
-    +'<button onclick="rebuildProgram()" class="btns" style="margin-top:12px;margin-bottom:20px">&#9998; Change Settings and Rebuild</button>';
+    +'<button onclick="rebuildProgram()" class="btns" style="margin-top:12px;margin-bottom:8px">&#9998; Change Settings and Rebuild</button>'
+    +'<button onclick="resetApp()" style="display:block;width:100%;background:none;border:none;color:var(--mut);font-size:12px;text-decoration:underline;cursor:pointer;padding:8px;margin-bottom:20px">Clear all data and start fresh</button>';
 }
 
 // ---- INIT: check for saved data ----
