@@ -230,6 +230,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .bf-gauge-track{height:8px;border-radius:8px;background:var(--bor);margin-bottom:4px}
 .bf-gauge-fill{height:100%;border-radius:8px;transition:width .5s ease}
 .bf-gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.03em}
+
+.swap-btn{display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--bor);border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px;font-weight:600;color:var(--mut);margin-top:8px}
+.swap-btn:active{background:var(--sur2)}
+.swap-picker{display:none;margin-top:8px;background:var(--sur2);border-radius:8px;padding:10px;border:1px solid var(--bor)}
+.swap-picker.on{display:block;animation:fu .2s ease}
+.swap-picker-head{font-size:11px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.swap-opt{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;cursor:pointer;margin-bottom:4px;background:var(--sur)}
+.swap-opt:active{background:var(--bor)}
+.swap-opt.current{border:1.5px solid var(--acc);background:var(--adim)}
+.swap-opt-name{font-size:13px;font-weight:600;color:var(--txt)}
+.swap-opt-tag{font-size:10px;color:var(--acc);text-transform:uppercase;letter-spacing:.04em}
+.swap-cancel{display:block;width:100%;text-align:center;font-size:12px;color:var(--mut);background:none;border:none;cursor:pointer;padding:8px;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -998,6 +1010,13 @@ var BW={chest:['Push-Up','Wide Push-Up'],back:['Bodyweight Row'],legs:['Bodyweig
 var NT={'Barbell Back Squat':'Drive knees out, chest tall, squat to parallel or below.','Barbell Bench Press':'Tuck elbows 45 degrees, lower bar to lower chest.','Barbell Bent-Over Row':'Hinge at hips, pull bar to lower ribs, squeeze shoulder blades.','Barbell Overhead Press':'Brace core, press straight overhead, full lockout at top.','Romanian Deadlift':'Push hips back, soft knee bend, feel the hamstring stretch.','Barbell Hip Thrust':'Drive through heels, squeeze glutes hard at the top.','Barbell Deadlift':'Engage lats before pulling, lock hips and knees simultaneously.','Barbell Lunge':'Long stride, knee tracks over toes, torso upright.','Barbell Incline Press':'Set bench 30-45 degrees to target upper chest.','Barbell Curl':'Keep elbows pinned at sides, full range of motion.','Barbell Skull Crusher':'Lower bar to forehead, elbows pointing at ceiling.','Barbell Push Press':'Use leg drive to initiate the press, lock out overhead.','Barbell Pendlay Row':'Bar starts from floor each rep, explosive pull.','Close-Grip Bench Press':'Elbows close to body, great for tricep strength.','Ab Wheel Rollout':'Core braced tight, do not let hips sag.','Dumbbell Bench Press':'Plant feet, slight arch, lower until dumbbells reach chest.','Dumbbell Incline Press':'30-45 degree incline, elbows at 45 degrees, full stretch.','Dumbbell Chest Fly':'Slight bend in elbows, feel the chest stretch at bottom.','Dumbbell Row':'Support on bench, pull elbow past torso, squeeze at top.','Dumbbell Overhead Press':'Neutral grip, press straight up without arching lower back.','Dumbbell Lateral Raise':'Slight elbow bend, raise to shoulder height only.','Dumbbell Rear Delt Fly':'Hinge forward, arms wide, squeeze rear delts at top.','Dumbbell Curl':'Supinate wrist at top for full bicep contraction.','Dumbbell Hammer Curl':'Neutral grip, targets brachialis and forearm thickness.','Dumbbell Goblet Squat':'Hold at chest, drive elbows to push knees out, sit deep.','Dumbbell Lunge':'Long step, back knee nearly touches floor, torso upright.','Dumbbell Bulgarian Split Squat':'Rear foot elevated, front shin vertical at the bottom.','Dumbbell Romanian Deadlift':'Hinge at hips, keep dumbbells close to legs.','Dumbbell Step-Up':'Drive through the heel of the working leg only.','Dumbbell Overhead Tricep Extension':'Keep elbows forward, lower behind head slowly.','Dumbbell Pullover':'Slight elbow bend, feel lat stretch at the bottom.','Dumbbell Russian Twist':'Feet off floor for harder variation, rotate fully.','Pull-Up':'Full hang to chin above bar, squeeze lats at top.','Chin-Up':'Supinated grip, elbows drive down and back.','Dip':'Lean forward slightly for chest, upright for triceps.','Tricep Dip':'Hands on bench, lower until elbows at 90 degrees.','Hanging Leg Raise':'Straight legs, control descent to avoid swinging.','Cable Fly':'Slight elbow bend, feel the stretch and squeeze at centre.','Cable Row':'Sit tall, drive elbows back, squeeze mid-back at end.','Cable Lat Pulldown':'Pull to upper chest, lead with elbows, full stretch at top.','Cable Face Pull':'Pull to forehead level, elbows high and wide.','Cable Curl':'Constant tension throughout the full range of motion.','Cable Tricep Pushdown':'Elbows pinned, fully extend and squeeze triceps.','Cable Crunch':'Round lower back, crunch abs, do not pull with arms.','Cable Pallof Press':'Press straight out, brace core, resist rotation.','Cable Lateral Raise':'Constant tension, raise to shoulder height only.','Cable Chest Press':'Anchor at chest height, press forward and slightly in.','Leg Press':'Feet shoulder width, press through heels, do not lock knees.','Leg Curl':'Control the lowering phase, full range of motion.','Leg Extension':'Squeeze at top, control descent.','Calf Raise Machine':'Full range of motion, stretch at bottom, flex hard at top.','Machine Chest Press':'Adjust seat so handles align with chest height.','Machine Pec Deck Fly':'Maintain slight elbow bend, feel chest stretch at back.','Machine Row':'Drive elbows back, squeeze shoulder blades at end.','Machine Lat Pulldown':'Wide grip, pull to upper chest, full stretch at top.','Machine Shoulder Press':'Adjust handles to ear height, full press overhead.','Machine Curl':'Full range, squeeze biceps at top, control descent.','Machine Tricep Extension':'Elbows pinned, extend fully, control the return.','Machine Crunch':'Crunch abs not hips, keep lower back against pad.','Band Pull-Apart':'Arms straight, pull band apart, squeeze rear delts.','Band Hip Thrust':'Band across hips, drive hips up, full glute squeeze.','Band Lateral Walk':'Stay low, short steps, constant tension on band.','Band Lateral Raise':'Control tempo, raise to shoulder height only.','Band Curl':'Constant tension, do not fully relax at top or bottom.','Band Tricep Extension':'Anchor high, elbows pinned at sides, extend fully.','Band Face Pull':'High anchor, pull to forehead, elbows high and wide.','Band Pallof Press':'Press to full extension, resist the rotational pull.','Band Push-Up':'Hands through band for added resistance at top.','Push-Up':'Body straight, chest to floor, elbows at 45 degrees.','Wide Push-Up':'Wider than shoulder-width grip for more chest emphasis.','Bodyweight Row':'Body rigid, pull chest to bar, squeeze shoulder blades.','Bodyweight Squat':'Feet shoulder width, arms forward for balance, sit deep.','Lunge':'Long stride, back knee hovers above floor.','Glute Bridge':'Feet flat, drive hips up, squeeze glutes hard at top.','Pike Push-Up':'Hips high, lower head between hands, press back up.','Diamond Push-Up':'Hands form a diamond, elbows close for tricep focus.','Plank':'Straight line from ears to heels, breathe steadily.','Bicycle Crunch':'Slow and controlled, fully rotate to opposite knee.','Leg Raise':'Lower back pressed to floor, lower legs slowly.','Dead Bug':'Press lower back into floor, extend opposite arm and leg.'};
 function note(n){return NT[n]||'Full range of motion, controlled tempo on every rep.';}
 
+function getAllExForMuscle(muscle){
+  var opts=[];
+  S.eq.forEach(function(e){if(EX[e]&&EX[e][muscle])EX[e][muscle].forEach(function(x){if(opts.indexOf(x)<0)opts.push(x);});});
+  if(BW[muscle])BW[muscle].forEach(function(x){if(opts.indexOf(x)<0)opts.push(x);});
+  return opts;
+}
+
 function pickEx(muscle,used){
   var opts=[];
   S.eq.forEach(function(e){if(EX[e]&&EX[e][muscle])EX[e][muscle].forEach(function(x){if(opts.indexOf(x)<0)opts.push(x);});});
@@ -1014,7 +1033,7 @@ function mkSets(){
   if(S.bmiC==='Obese'){r='15-20 reps';s=Math.max(2,s-1);}
   return s+'x'+r;
 }
-function mkEx(muscle,used){var n=pickEx(muscle,used);used[n]=true;return{name:n,sets:mkSets(),notes:note(n)};}
+function mkEx(muscle,used){var n=pickEx(muscle,used);used[n]=true;return{name:n,sets:mkSets(),notes:note(n),muscle:muscle};}
 
 // ---- BUILD PROGRAM ----
 function buildProgram(){
@@ -1028,7 +1047,7 @@ function buildProgram(){
       var prog=genProg();
       LS.set('program',prog);
       saveProfile();
-      vidInputMap={}; logMap={}; logSetCounts={};
+      vidInputMap={}; logMap={}; logSetCounts={}; swapRegistry={};
       gid('out').innerHTML=renderProg(prog);
     }catch(err){
       gid('out').innerHTML='<div style="padding:20px;color:#ff6b6b;font-size:14px;line-height:1.8"><b>Error building program:</b><br>'+err.message+'<br><br>Please go back and try again.</div>';
@@ -1188,10 +1207,64 @@ function rebuildProgram(){
   if(S.name)showP1Summary();
 }
 
+
+// ── EXERCISE SWAP ─────────────────────────────────────────────────────────────
+var swapRegistry={};  // swapId -> {dayNum, exIdx, muscle} - rebuilt on each render
+
+function muscleLabel(m){
+  return {chest:'Chest',back:'Back',legs:'Legs',shoulders:'Shoulders',arms:'Arms',core:'Core'}[m]||m;
+}
+
+function toggleSwap(btnId){
+  var swapId=btnId.replace('swbtn_','');
+  var picker=gid('swpick_'+swapId);
+  if(!picker)return;
+  var isOpen=picker.classList.contains('on');
+  if(isOpen){picker.classList.remove('on');picker.innerHTML='';return;}
+  var info=swapRegistry[swapId];
+  if(!info)return;
+  var prog=LS.get('program');
+  if(!prog)return;
+  var day=prog.days.find(function(d){return d.num===info.dayNum;});
+  if(!day)return;
+  var currentEx=day.exercises[info.exIdx];
+  var currentName=currentEx?currentEx.name:'';
+  var opts=getAllExForMuscle(info.muscle);
+  var html='<div class="swap-picker-head">Swap for another '+muscleLabel(info.muscle)+' exercise</div>';
+  opts.forEach(function(name){
+    var isCur=name===currentName;
+    html+='<div class="swap-opt'+(isCur?' current':'')+'" onclick="commitSwap(\''+swapId+'\',\''+name.replace(/'/g,"\\'")+'\')">'
+      +'<span class="swap-opt-name">'+H(name)+'</span>'
+      +(isCur?'<span class="swap-opt-tag">Current</span>':'')
+      +'</div>';
+  });
+  html+='<button class="swap-cancel" onclick="toggleSwap(\''+btnId+'\')">Cancel</button>';
+  picker.innerHTML=html;
+  picker.classList.add('on');
+}
+
+function commitSwap(swapId,newName){
+  var info=swapRegistry[swapId];
+  if(!info)return;
+  var prog=LS.get('program');
+  if(!prog)return;
+  var day=prog.days.find(function(d){return d.num===info.dayNum;});
+  if(!day)return;
+  var ex=day.exercises[info.exIdx];
+  if(!ex)return;
+  if(ex.name===newName){toggleSwap('swbtn_'+swapId);return;}
+  ex.name=newName;
+  ex.notes=note(newName);
+  // keep same sets/reps scheme, muscle group unchanged
+  LS.set('program',prog);
+  reRenderProg();
+}
+
 function reRenderProg(){
   vidInputMap={};   // reset - rebuilt by makeVideoHTML during render
   logMap={};        // reset - rebuilt by makeLogHTML during render
   logSetCounts={};
+  swapRegistry={};  // reset - rebuilt by renderProg during render
   var prog=LS.get('program');
   if(prog){gid('out').innerHTML=renderProg(prog);}
 }
@@ -1212,7 +1285,16 @@ function renderProg(p){
     if(day.rest)return '<div class="dc"><div class="dh" onclick="this.parentElement.classList.toggle(\'open\')"><div class="dm"><div class="dbg r">'+day.num+'</div><div><div class="dn">'+H(day.name)+'</div><div class="df">'+H(day.focus)+'</div></div></div><div class="dchev">&#8964;</div></div><div class="db"><div class="restbox"><div class="ri">&#128564;</div><div class="rt">Recovery Day</div><div class="rs">Walk, stretch, foam roll or 20 min light cardio. Muscles repair on rest days.</div></div></div></div>';
     var daySets=day.exercises.reduce(function(a,e){var m=(e.sets||'').match(/^(\d+)/);return a+(m?parseInt(m[1]):3);},0);
     var dayKcal=calcSessionCalories(day.exercises.length,daySets).kcal;
-    var exHTML=day.exercises.map(function(ex){return '<div class="ex"><div class="ext"><div><div class="exn">'+H(ex.name)+'</div><div class="exnt">'+H(ex.notes)+'</div></div><div><div class="exs">'+H(ex.sets)+'</div><div class="exsl">Sets x Reps</div></div></div>'+makeVideoHTML(ex.name)+makeLogHTML(ex.name,ex.sets)+'</div>';}).join('');
+    var exHTML=day.exercises.map(function(ex,exIdx){
+      var swapId='sw_'+day.num+'_'+exIdx;
+      swapRegistry[swapId]={dayNum:day.num,exIdx:exIdx,muscle:ex.muscle||'chest'};
+      return '<div class="ex" id="exwrap_'+swapId+'">'
+        +'<div class="ext"><div><div class="exn">'+H(ex.name)+'</div><div class="exnt">'+H(ex.notes)+'</div></div><div><div class="exs">'+H(ex.sets)+'</div><div class="exsl">Sets x Reps</div></div></div>'
+        +makeVideoHTML(ex.name)+makeLogHTML(ex.name,ex.sets)
+        +'<button class="swap-btn" id="swbtn_'+swapId+'" onclick="toggleSwap(this.id)">&#128260; Swap exercise</button>'
+        +'<div class="swap-picker" id="swpick_'+swapId+'"></div>'
+        +'</div>';
+    }).join('');
     return '<div class="dc"><div class="dh" onclick="this.parentElement.classList.toggle(\'open\')"><div class="dm"><div class="dbg">'+day.num+'</div><div><div class="dn">'+H(day.name)+'</div><div class="df">'+H(day.focus)+' &bull; ~'+dayKcal+' kcal</div></div></div><div class="dchev">&#8964;</div></div><div class="db"><div style="font-size:11px;color:var(--mut);padding:9px 0 6px;letter-spacing:.04em">TAP A DAY TO EXPAND - SAVE VIDEO IDS FOR EACH EXERCISE</div>'+exHTML+'</div></div>';
   }).join('');
   var prs=(p.principles||[]).map(function(pr){return '<div class="pb"><h4>'+H(pr.t)+'</h4><p>'+H(pr.b)+'</p></div>';}).join('');
@@ -1243,7 +1325,7 @@ function renderProg(p){
     var prog=LS.get('program');
     if(prog){
       // Has saved program - load it directly
-      vidInputMap={};logMap={};logSetCounts={};
+      vidInputMap={};logMap={};logSetCounts={};swapRegistry={};
       gid('out').innerHTML=renderProg(prog);
       showPg(8);
       return;
